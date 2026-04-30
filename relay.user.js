@@ -8,6 +8,8 @@
 // @grant        GM_xmlhttpRequest
 // @connect      localhost
 // @connect      social-feed-app-production-c6b1.up.railway.app
+// @updateURL    https://raw.githubusercontent.com/LawrenceLau8054/social-feed-app/master/relay.user.js
+// @downloadURL  https://raw.githubusercontent.com/LawrenceLau8054/social-feed-app/master/relay.user.js
 // @run-at       document-start
 // ==/UserScript==
 
