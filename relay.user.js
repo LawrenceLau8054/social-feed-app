@@ -81,11 +81,20 @@
     }
   }
 
+  function getConfig() {
+    return new Promise((resolve) => {
+      GM_xmlhttpRequest({
+        method: 'GET',
+        url: `${SERVER}/api/config?_=${Date.now()}`,
+        onload: (r) => { try { resolve(JSON.parse(r.responseText)); } catch (e) { resolve({}); } },
+        onerror: () => resolve({}),
+      });
+    });
+  }
+
   async function syncAndPoll() {
-    try {
-      const cfg = await _fetch(`${SERVER}/api/config`).then(r => r.json());
-      HANDLES = cfg.watchTruth || [];
-    } catch {}
+    const cfg = await getConfig();
+    HANDLES = cfg.watchTruth || [];
     HANDLES.forEach(relay);
   }
 
