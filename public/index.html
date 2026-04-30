@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Feed Viewer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="platform-truthsocial">
+  <div class="app">
+    <header>
+      <h1>Social Feed Viewer</h1>
+      <p class="subtitle">Live feed from X or Truth Social</p>
+    </header>
+
+    <div class="search-bar">
+      <div class="platform-toggle">
+        <button class="platform-btn" data-platform="twitter">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          X (Twitter)
+        </button>
+        <button class="platform-btn active" data-platform="truthsocial">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-5h2v2h-2zm0-8h2v6h-2z"/>
+          </svg>
+          Truth Social
+        </button>
+      </div>
+
+      <div class="input-row">
+        <span class="at-sign">@</span>
+        <input
+          type="text"
+          id="handle-input"
+          placeholder="Enter handle…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="load-btn">Load Feed</button>
+      </div>
+    </div>
+
+    <div id="status-bar" class="status-bar hidden">
+      <span id="status-label"></span>
+      <span id="next-refresh"></span>
+    </div>
+
+    <div id="feed" class="feed hidden">
+      <div id="posts-container"></div>
+    </div>
+
+    <div id="error-box" class="error-box hidden">
+      <span id="error-msg"></span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
