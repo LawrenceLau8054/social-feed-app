@@ -95,6 +95,7 @@
   async function syncAndPoll() {
     const cfg = await getConfig();
     HANDLES = cfg.watchTruth || [];
+    console.log('[TruthRelay] sync: ' + HANDLES.length + ' handle(s) — ' + (liveToken ? 'token ready' : 'no token yet'));
     HANDLES.forEach(relay);
   }
 
