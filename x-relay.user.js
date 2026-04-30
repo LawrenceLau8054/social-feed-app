@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X (Twitter) Feed Relay
 // @namespace    http://localhost:3000
-// @version      5.4
+// @version      5.5
 // @description  Relays X/Twitter posts to the local Social Feed Viewer app
 // @author       local
 // @match        https://x.com/*
@@ -17,7 +17,7 @@
 
   const SERVER = 'https://social-feed-app-production-c6b1.up.railway.app';
   const CONFIG_MS = 3000;  // how often to check for newly-added handles
-  const POLL_MS = 15000;   // how often to actively poll existing handles
+  const POLL_MS = 5000;    // how often to actively poll existing handles
   const XHR_COOLDOWN_MS = 20000; // skip active poll if x.com itself made a UserTweets XHR this recently
 
   let authToken = null;
@@ -317,5 +317,5 @@
     setInterval(regularPoll, POLL_MS);    // full poll every 15s
   }, 6000);
 
-  console.log('[XRelay] v5.4 loaded');
+  console.log('[XRelay] v5.5 loaded');
 })();
