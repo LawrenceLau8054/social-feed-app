@@ -301,5 +301,5 @@
     setInterval(syncAndPoll, POLL_MS);
   }, 6000);
 
-  console.log('[XRelay] v5.2 loaded');
+  console.log('[XRelay] v5.3 loaded');
 })();
