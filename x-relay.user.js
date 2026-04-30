@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X (Twitter) Feed Relay
 // @namespace    http://localhost:3000
-// @version      5.3
+// @version      5.4
 // @description  Relays X/Twitter posts to the local Social Feed Viewer app
 // @author       local
 // @match        https://x.com/*
@@ -16,7 +16,8 @@
   'use strict';
 
   const SERVER = 'https://social-feed-app-production-c6b1.up.railway.app';
-  const POLL_MS = 15000; // 15s active poll — passive intercept handles faster updates
+  const CONFIG_MS = 3000;  // how often to check for newly-added handles
+  const POLL_MS = 15000;   // how often to actively poll existing handles
   const XHR_COOLDOWN_MS = 20000; // skip active poll if x.com itself made a UserTweets XHR this recently
 
   let authToken = null;
@@ -281,15 +282,29 @@
     });
   }
 
-  async function syncAndPoll() {
+  var knownHandles = new Set(); // handles we've already polled at least once
+
+  async function syncConfig() {
     var cfg = await getConfig();
-    var handles = cfg.watchTwitter || [];
-    watchedHandles = new Set(handles.map(function (h) { return h.toLowerCase(); }));
-    if (!handles.length) return;
-    console.log('[XRelay] sync: ' + handles.length + ' handle(s) | queryId:' + (userTweetsQueryId || 'pending'));
+    var handles = (cfg.watchTwitter || []).map(function (h) { return h.toLowerCase(); });
+    watchedHandles = new Set(handles);
+
+    // Immediately poll any handle that just appeared in the watchlist
     if (userTweetsQueryId && authToken) {
-      await Promise.all(handles.map(pollActive));
+      var brand_new = handles.filter(function (h) { return !knownHandles.has(h); });
+      if (brand_new.length) {
+        console.log('[XRelay] New handle(s) detected, polling immediately: ' + brand_new.join(', '));
+        await Promise.all(brand_new.map(pollActive));
+      }
     }
+    handles.forEach(function (h) { knownHandles.add(h); });
+  }
+
+  async function regularPoll() {
+    var handles = Array.from(watchedHandles);
+    if (!handles.length || !userTweetsQueryId || !authToken) return;
+    console.log('[XRelay] regular poll: ' + handles.length + ' handle(s)');
+    await Promise.all(handles.map(pollActive));
   }
 
   var csrfMatch = document.cookie.match(/ct0=([^;]+)/);
@@ -297,9 +312,10 @@
 
   // Wait 6s before first sync — lets x.com finish its page-load XHR burst first
   setTimeout(function () {
-    syncAndPoll();
-    setInterval(syncAndPoll, POLL_MS);
+    syncConfig();
+    setInterval(syncConfig, CONFIG_MS);   // check for new handles every 3s
+    setInterval(regularPoll, POLL_MS);    // full poll every 15s
   }, 6000);
 
-  console.log('[XRelay] v5.3 loaded');
+  console.log('[XRelay] v5.4 loaded');
 })();
