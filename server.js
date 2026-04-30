@@ -97,7 +97,7 @@ app.get('/api/twitter/:handle', (req, res) => {
   const stored = twitterStore[key];
   if (!stored) {
     return res.status(503).json({
-      error: `Waiting for data — make sure x.com is open in Chrome with the X Feed Relay script. Visit x.com/${req.params.handle} once to register it, then it polls automatically.`,
+      error: `Waiting for data — make sure x.com is open in a Chrome tab with the X Feed Relay Tampermonkey script running.`,
     });
   }
   res.json({ posts: stored.posts, username: req.params.handle });

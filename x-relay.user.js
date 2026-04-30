@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X (Twitter) Feed Relay
 // @namespace    http://localhost:3000
-// @version      5.2
+// @version      5.3
 // @description  Relays X/Twitter posts to the local Social Feed Viewer app
 // @author       local
 // @match        https://x.com/*
@@ -21,11 +21,14 @@
 
   let authToken = null;
   let csrfToken = null;
-  let userTweetsQueryId = null;
-  let userTweetsFeatures = '';
-  let userByScreenNameQueryId = null;
-  let userByScreenNameFeatures = '';
   let pollBackoffMs = POLL_MS;
+
+  // Load cached queryIds from localStorage so we can poll immediately without a profile visit
+  let userTweetsQueryId = localStorage.getItem('xrelay_utQueryId') || null;
+  let userTweetsFeatures = localStorage.getItem('xrelay_utFeatures') || '';
+  let userByScreenNameQueryId = localStorage.getItem('xrelay_ubsnQueryId') || null;
+  let userByScreenNameFeatures = localStorage.getItem('xrelay_ubsnFeatures') || '';
+  if (userTweetsQueryId) console.log('[XRelay] UserTweets queryId restored from cache: ' + userTweetsQueryId);
 
   const userIdCache = {};      // handle -> userId
   const userIdToHandle = {};   // userId -> handle
@@ -59,15 +62,27 @@
       var m = this._xrelayUrl.match(/\/graphql\/([^/]+)\/(\w+)/);
       if (m) {
         var opName = m[2];
-        if (opName === 'UserTweets' && !userTweetsQueryId) {
-          userTweetsQueryId = m[1];
-          try { userTweetsFeatures = new URL(this._xrelayUrl).searchParams.get('features') || ''; } catch (e) {}
-          console.log('[XRelay] UserTweets queryId captured: ' + userTweetsQueryId);
+        if (opName === 'UserTweets') {
+          var newQid = m[1];
+          try { var newFeat = new URL(this._xrelayUrl).searchParams.get('features') || ''; } catch (e) { var newFeat = ''; }
+          if (newQid !== userTweetsQueryId) {
+            userTweetsQueryId = newQid;
+            userTweetsFeatures = newFeat;
+            localStorage.setItem('xrelay_utQueryId', userTweetsQueryId);
+            localStorage.setItem('xrelay_utFeatures', userTweetsFeatures);
+            console.log('[XRelay] UserTweets queryId captured & cached: ' + userTweetsQueryId);
+          }
         }
-        if (opName === 'UserByScreenName' && !userByScreenNameQueryId) {
-          userByScreenNameQueryId = m[1];
-          try { userByScreenNameFeatures = new URL(this._xrelayUrl).searchParams.get('features') || ''; } catch (e) {}
-          console.log('[XRelay] UserByScreenName queryId captured');
+        if (opName === 'UserByScreenName') {
+          var newUbsnQid = m[1];
+          try { var newUbsnFeat = new URL(this._xrelayUrl).searchParams.get('features') || ''; } catch (e) { var newUbsnFeat = ''; }
+          if (newUbsnQid !== userByScreenNameQueryId) {
+            userByScreenNameQueryId = newUbsnQid;
+            userByScreenNameFeatures = newUbsnFeat;
+            localStorage.setItem('xrelay_ubsnQueryId', userByScreenNameQueryId);
+            localStorage.setItem('xrelay_ubsnFeatures', userByScreenNameFeatures);
+            console.log('[XRelay] UserByScreenName queryId captured & cached');
+          }
         }
         // Extract userId from UserTweets variables so we can match the response
         if (opName === 'UserTweets') {
