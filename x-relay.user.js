@@ -8,13 +8,14 @@
 // @match        https://twitter.com/*
 // @grant        GM_xmlhttpRequest
 // @connect      localhost
+// @connect      social-feed-app-production-c6b1.up.railway.app
 // @run-at       document-start
 // ==/UserScript==
 
 (function () {
   'use strict';
 
-  const SERVER = 'http://localhost:3000';
+  const SERVER = 'https://social-feed-app-production-c6b1.up.railway.app';
   const POLL_MS = 15000; // 15s active poll — passive intercept handles faster updates
   const XHR_COOLDOWN_MS = 20000; // skip active poll if x.com itself made a UserTweets XHR this recently
 

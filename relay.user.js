@@ -7,13 +7,14 @@
 // @match        https://truthsocial.com/*
 // @grant        GM_xmlhttpRequest
 // @connect      localhost
+// @connect      social-feed-app-production-c6b1.up.railway.app
 // @run-at       document-start
 // ==/UserScript==
 
 (function () {
   'use strict';
 
-  const SERVER = 'http://localhost:3000';
+  const SERVER = 'https://social-feed-app-production-c6b1.up.railway.app';
   const POLL_MS = 5000;
   let HANDLES = [];
 
